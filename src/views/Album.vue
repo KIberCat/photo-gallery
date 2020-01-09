@@ -146,9 +146,54 @@
                     <v-spacer></v-spacer>
 
                     <v-toolbar-items>
-                      <v-btn dark text @click="value.modal = false">Добавить</v-btn>
+                      <v-btn dark text :disabled="!activePhoto" @click="addToAlbum">Добавить</v-btn>
                     </v-toolbar-items>
                   </v-toolbar>
+                        <v-container
+                          class="fill-height"
+                          fluid
+                        >
+                          <v-row
+                            justify="start"
+                            class="px-10 py-4"
+                          >
+                            <v-hover 
+                              v-for="(value, idx) in imageSrc" 
+                              :key="idx"
+                              class="mx-2 mb-4"
+                            >
+                              <template v-slot:default="{ hover }">
+                                <v-card
+                                >
+                                  <v-img
+                                    class="white--text align-end"
+                                    height="200px"
+                                    width="300px"
+                                    :src="value.src"
+                                  >
+                                  </v-img>
+                                  <v-fade-transition>
+                                    <v-overlay
+                                      v-if="hover || value.active"
+                                      absolute
+                                      color="#000"
+                                      class="d-flex"
+                                    >
+                                      <v-btn 
+                                        @click="value.active = !value.active" 
+                                        text 
+                                        icon 
+                                        :color="value.active ? 'blue' : 'white'"
+                                      >
+                                        <v-icon>mdi-check-bold</v-icon>
+                                      </v-btn>
+                                    </v-overlay>
+                                  </v-fade-transition>
+                                </v-card>
+                              </template>
+                            </v-hover>
+                          </v-row>
+                        </v-container>
                 </v-card>
               </v-dialog>
             </v-row>
@@ -227,7 +272,8 @@ export default {
     dialog: false,
     loading: true,
     albumsCard: [],
-    newName: ''
+    newName: '',
+    imageSrc: []
   }),
   methods: {
     ...mapActions(['createAlbum', 'setAlbum', 'removeAlbum', 'updateName']),
@@ -284,9 +330,19 @@ export default {
         await this.updateName(data);
       } catch (e) {}
     },
+
+    async addToAlbum() {
+      let data = this.imageSrc;
+
+      console.log(data);
+    }
   },
   computed: {
-    ...mapGetters(['albums']),
+    ...mapGetters(['albums', 'images']),
+
+    activePhoto() {
+      return this.imageSrc.some(item => item.active);
+    },
 
     nameErrors () {
       const errors = []
@@ -319,6 +375,10 @@ export default {
   watch: {
     albums(data) {
       this.albumsCard = data;
+    },
+
+    images(img) {
+      this.imageSrc = img;
     }
   },
   async mounted() {

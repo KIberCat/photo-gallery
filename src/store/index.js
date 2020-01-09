@@ -8,6 +8,7 @@ import album from './album'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+  strict: true,
   state: {
     error: null
   },

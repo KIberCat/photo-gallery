@@ -12,7 +12,6 @@ export default {
   actions: {
     async createAlbum({commit, dispatch}, data) {
       try {
-        const album = data;
         const uid = await dispatch('getUid');
 
         const pushAlbum = await firebase.database().ref(`/users/${uid}/albums`).push(data);
@@ -54,7 +53,7 @@ export default {
         } else {
           commit('setAlbums', []);
         }
-        await dispatch('setPhoto');
+        await dispatch('getPhoto');
       } catch (e) {
         commit('setError', e);
         throw e;
